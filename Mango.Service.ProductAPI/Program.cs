@@ -7,10 +7,20 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var dbConnectionString = string.Empty;
+if (builder.Environment.IsDevelopment())
+{
+    dbConnectionString = builder.Configuration["MangoDbConnection"];
+}
+else
+{
+    throw new NotImplementedException();
+}
+
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationContext>(options =>
 {
-	options.UseSqlServer(builder.Configuration.GetConnectionString("MangoConnection"));
+	options.UseSqlServer(dbConnectionString);
 });
 
 var mapper = MappingConfig.GetMapperConfiguration();
