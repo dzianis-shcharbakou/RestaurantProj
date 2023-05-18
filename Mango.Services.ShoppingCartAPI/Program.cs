@@ -1,5 +1,15 @@
 var builder = WebApplication.CreateBuilder(args);
 
+var dbConnectionString = string.Empty;
+if (builder.Environment.IsDevelopment())
+{
+    dbConnectionString = builder.Configuration["ShoppingCartDbConnection"];
+}
+else
+{
+    throw new NotImplementedException();
+}
+
 // Add services to the container.
 
 builder.Services.AddControllers();
