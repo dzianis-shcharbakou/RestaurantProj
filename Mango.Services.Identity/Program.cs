@@ -10,8 +10,20 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
+var dbConnectionString = string.Empty;
+var clientSecret = string.Empty;
+if (builder.Environment.IsDevelopment())
+{
+    dbConnectionString = builder.Configuration["DefaultDbConnection"];
+    clientSecret = builder.Configuration["ClientSecret"];
+}
+else
+{
+    throw new NotImplementedException();
+}
+
 builder.Services.AddDbContext<ApplicationDbContext>(options => {
-	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+	options.UseSqlServer(dbConnectionString);
 });
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 	.AddEntityFrameworkStores<ApplicationDbContext>()
@@ -25,7 +37,7 @@ builder.Services.AddIdentityServer(options =>
 	options.EmitStaticAudienceClaim = true;
 }).AddInMemoryIdentityResources(StaticDetails.Resources)
 .AddInMemoryApiScopes(StaticDetails.Scopes)
-.AddInMemoryClients(StaticDetails.Clients)
+.AddInMemoryClients(StaticDetails.GetClients(clientSecret))
 .AddAspNetIdentity<ApplicationUser>()
 .AddDeveloperSigningCredential();
 
