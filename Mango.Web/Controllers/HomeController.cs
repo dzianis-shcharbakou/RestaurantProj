@@ -22,7 +22,7 @@ namespace Mango.Web.Controllers
         public async Task<IActionResult> Index()
         {
             var products = new List<ProductDto>();
-            var response = await _productService.GetProductsAsync<ResponseDto>("");
+            var response = await _productService.GetProductsAsync<ResponseDto>(string.Empty);
             if (response != null && response.IsSuccess)
             {
                 products = JsonConvert.DeserializeObject<List<ProductDto>>(Convert.ToString(response.Result));
@@ -35,7 +35,7 @@ namespace Mango.Web.Controllers
         public async Task<IActionResult> Details(int productId)
         {
             var product = new ProductDto();
-            var response = await _productService.GetProductAsync<ResponseDto>(productId, "");
+            var response = await _productService.GetProductAsync<ResponseDto>(productId, string.Empty);
             if (response != null && response.IsSuccess)
             {
                 product = JsonConvert.DeserializeObject<ProductDto>(Convert.ToString(response.Result));
