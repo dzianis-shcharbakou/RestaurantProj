@@ -33,7 +33,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-	options.EnableAnnotations();
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Mango.Services.ProductAPI", Version = "v1" });
+    options.EnableAnnotations();
 	options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
 	{
 		Description = @"Enter 'Bearer' [space] and your token",
