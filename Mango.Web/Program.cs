@@ -9,6 +9,7 @@ var clientSecret = string.Empty;
 if (builder.Environment.IsDevelopment())
 {
     StaticDetails.ProductApiBase = builder.Configuration["ServiceUrls:ProductApi"];
+    StaticDetails.ShoppingCartApi = builder.Configuration["ServiceUrls:ShoppingCartApi"];
     identityApi = builder.Configuration["ServiceUrls:IdentityApi"];
     clientSecret = builder.Configuration["ClientSecret"];
 }
@@ -20,7 +21,9 @@ else
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient<IProductService, ProductService>();
+builder.Services.AddHttpClient<IShoppingCartService, ShoppingCartService>();
 builder.Services.AddTransient<IProductService, ProductService>();
+builder.Services.AddTransient<IShoppingCartService, ShoppingCartService>();
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = "Cookies";
