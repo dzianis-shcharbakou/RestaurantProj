@@ -4,9 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Mango.Services.ShoppingCartAPI.Controllers
 {
-    [ApiController]
     [Route("api/cart")]
-    public class CartController : Controller
+    public class CartController : ControllerBase
     {
         private readonly ICartRepository _cartRepository;
         private readonly ResponseDto _responseDto;
@@ -19,11 +18,11 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<object> GetCart(string userId)
+        public async Task<object> Get(string userId)
         {
             try
             {
-                var cartDto = _cartRepository.GetCartByUserId(userId);
+                var cartDto = await _cartRepository.GetCartByUserId(userId);
                 _responseDto.Result = cartDto;
             }
             catch (Exception ex)
@@ -36,11 +35,11 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<object> AddCart(CartDto cartDto)
+        public async Task<object> Post([FromBody] CartDto cartDto)
         {
             try
             {
-                var cartDtoResult = _cartRepository.CreateUpdateCart(cartDto);
+                var cartDtoResult = await _cartRepository.CreateUpdateCart(cartDto);
                 _responseDto.Result = cartDtoResult;
             }
             catch (Exception ex)
@@ -53,11 +52,11 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
         }
 
         [HttpPut]
-        public async Task<object> UpdateCart(CartDto cartDto)
+        public async Task<object> Put([FromBody] CartDto cartDto)
         {
             try
             {
-                var cartDtoResult = _cartRepository.CreateUpdateCart(cartDto);
+                var cartDtoResult = await _cartRepository.CreateUpdateCart(cartDto);
                 _responseDto.Result = cartDtoResult;
             }
             catch (Exception ex)
@@ -70,11 +69,11 @@ namespace Mango.Services.ShoppingCartAPI.Controllers
         }
 
         [HttpDelete]
-        public async Task<object> RemoveCart([FromBody]int cartId)
+        public async Task<object> Delete([FromBody] int cartId)
         {
             try
             {
-                var isSuccess = _cartRepository.RemoveFromCart(cartId);
+                var isSuccess = await _cartRepository.RemoveFromCart(cartId);
                 _responseDto.Result = isSuccess;
             }
             catch (Exception ex)
