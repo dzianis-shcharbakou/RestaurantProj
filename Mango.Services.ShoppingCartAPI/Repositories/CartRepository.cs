@@ -3,7 +3,6 @@ using Mango.Services.ShoppingCartAPI.DbContexts;
 using Mango.Services.ShoppingCartAPI.Models;
 using Mango.Services.ShoppingCartAPI.Models.Dto;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 
 namespace Mango.Services.ShoppingCartAPI.Repositories
 {
@@ -83,7 +82,10 @@ namespace Mango.Services.ShoppingCartAPI.Repositories
         {
             var cart = new Cart();
             cart.CartHeader = await _applicationContext.CartHeaders.FirstOrDefaultAsync(x => x.UserId == userId);
-            cart.CartDetails = _applicationContext.CartDetails.Where(x => x.CartHeaderId == cart.CartHeader.Id).Include(x => x.Product);
+            if (cart.CartHeader != null)
+            {
+                cart.CartDetails = await _applicationContext.CartDetails.Where(x => x.CartHeaderId == cart.CartHeader.Id).Include(x => x.Product).ToListAsync();
+            }
 
             return _mapper.Map<CartDto>(cart);
         }
