@@ -4,17 +4,24 @@ using Mango.Service.ProductAPI.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var dbConnectionString = string.Empty;
-if (builder.Environment.IsDevelopment())
+
+if (builder.Environment.EnvironmentName == "LocalDevelopment")
 {
-    dbConnectionString = builder.Configuration["MangoDbConnection"];
+    builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), true);
+    dbConnectionString = builder.Configuration["ConnectionStrings:MangoDbConnectionLocal"];
+}
+else if (builder.Environment.EnvironmentName == "Development")
+{
+    dbConnectionString = builder.Configuration["ConnectionStrings:MangoDbConnectionDev"];
 }
 else
 {
-    throw new NotImplementedException();
+    dbConnectionString = builder.Configuration["ConnectionStrings:MangoDbConnectionDev"];
 }
 
 // Add services to the container.
@@ -22,6 +29,8 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
 {
 	options.UseSqlServer(dbConnectionString);
 });
+
+//builder.Services.BuildServiceProvider().GetService<ApplicationContext>().Database.Migrate();
 
 var mapper = MappingConfig.GetMapperConfiguration();
 builder.Services.AddSingleton(mapper);
@@ -33,8 +42,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Mango.Services.ProductAPI", Version = "v1" });
-    options.EnableAnnotations();
+    options.SwaggerDoc("v1", new OpenApiInfo 
+	{ 
+		Title = $"Mango.Services.ProductAPI {builder.Environment.EnvironmentName}", 
+		Version = "v1"
+    });
 	options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
 	{
 		Description = @"Enter 'Bearer' [space] and your token",
@@ -83,12 +95,12 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+
+app.UseSwaggerUI(c =>
 {
-	app.UseSwagger();
-	app.UseSwaggerUI();
-}
+	c.SwaggerEndpoint("/swagger/v1/swagger.json", "Product API V1");
+});
 
 app.UseHttpsRedirection();
 
