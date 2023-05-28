@@ -24,6 +24,9 @@ else
     dbConnectionString = builder.Configuration["ConnectionStrings:MangoDbConnectionDev"];
 }
 
+var productBlobStorageName = builder.Configuration["ProductBlobStorageName"];
+ApplicationContext.ProductBlobStorageName = productBlobStorageName;
+
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationContext>(options =>
 {

@@ -5,7 +5,7 @@ namespace Mango.Service.ProductAPI.DbContexts
 {
     public class ApplicationContext : DbContext
     {
-        public string ProductBlobStorageName { get; set; }
+        public static string ProductBlobStorageName { get; set; }
         public ApplicationContext(DbContextOptions options) : base(options)
         {
         }
