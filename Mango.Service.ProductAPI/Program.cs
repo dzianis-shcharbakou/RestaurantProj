@@ -5,26 +5,33 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using Azure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var dbConnectionString = string.Empty;
 
-if (builder.Environment.EnvironmentName == "LocalDevelopment")
+builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), true);
+string appSettingConnectionString = builder.Configuration["ConnectionStrings:AppConfig"];
+builder.Configuration.AddAzureAppConfiguration(options =>
 {
-    builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), true);
-    dbConnectionString = builder.Configuration["ConnectionStrings:MangoDbConnectionLocal"];
-}
-else if (builder.Environment.EnvironmentName == "Development")
+    options.Connect(appSettingConnectionString)
+            .ConfigureKeyVault(kv =>
+            {
+                kv.SetCredential(new DefaultAzureCredential());
+            });
+});
+var productBlobStorageName = builder.Configuration["ProductBlobStorageName"];
+
+if (builder.Environment.EnvironmentName == "Development")
 {
-    dbConnectionString = builder.Configuration["ConnectionStrings:MangoDbConnectionDev"];
+    dbConnectionString = builder.Configuration["ConnectionStrings:Dev:MangoDbConnection"];
 }
 else
 {
-    dbConnectionString = builder.Configuration["ConnectionStrings:MangoDbConnectionDev"];
+    dbConnectionString = builder.Configuration["ConnectionStrings:Dev:MangoDbConnection"];
 }
 
-var productBlobStorageName = builder.Configuration["ProductBlobStorageName"];
 ApplicationContext.ProductBlobStorageName = productBlobStorageName;
 
 // Add services to the container.
