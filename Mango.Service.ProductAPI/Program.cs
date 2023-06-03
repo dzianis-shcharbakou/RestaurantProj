@@ -25,11 +25,11 @@ var productBlobStorageName = builder.Configuration["ProductBlobStorageName"];
 
 if (builder.Environment.EnvironmentName == "Development")
 {
-    dbConnectionString = builder.Configuration["ConnectionStrings:Dev:MangoDbConnection"];
+    dbConnectionString = builder.Configuration["ConnectionStrings:Dev:ProductDbConnectionDev"];
 }
 else
 {
-    dbConnectionString = builder.Configuration["ConnectionStrings:Dev:MangoDbConnection"];
+    dbConnectionString = builder.Configuration["ConnectionStrings:Dev:ProductDbConnectionDev"];
 }
 
 ApplicationContext.ProductBlobStorageName = productBlobStorageName;
