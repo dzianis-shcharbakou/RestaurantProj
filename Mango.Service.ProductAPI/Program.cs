@@ -6,16 +6,21 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using Azure.Identity;
+using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var dbConnectionString = string.Empty;
 
 builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), true);
-string appSettingConnectionString = builder.Configuration["ConnectionStrings:AppConfig"];
+string appSettingConnectionString = builder.Configuration["AppConfigConnectionString2"];
 builder.Configuration.AddAzureAppConfiguration(options =>
 {
     options.Connect(appSettingConnectionString)
+					// Load configuration values with no label
+                    .Select(KeyFilter.Any, LabelFilter.Null)
+                    // Override with any configuration values specific to current hosting env
+                    .Select(KeyFilter.Any, builder.Environment.EnvironmentName)
             .ConfigureKeyVault(kv =>
             {
                 kv.SetCredential(new DefaultAzureCredential());
@@ -40,7 +45,7 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
 	options.UseSqlServer(dbConnectionString);
 });
 
-//builder.Services.BuildServiceProvider().GetService<ApplicationContext>().Database.Migrate();
+builder.Services.BuildServiceProvider().GetService<ApplicationContext>().Database.Migrate();
 
 var mapper = MappingConfig.GetMapperConfiguration();
 builder.Services.AddSingleton(mapper);
