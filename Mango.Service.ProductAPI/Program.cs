@@ -45,7 +45,7 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
 	options.UseSqlServer(dbConnectionString);
 });
 
-builder.Services.BuildServiceProvider().GetService<ApplicationContext>().Database.Migrate();
+//builder.Services.BuildServiceProvider().GetService<ApplicationContext>().Database.Migrate();
 
 var mapper = MappingConfig.GetMapperConfiguration();
 builder.Services.AddSingleton(mapper);
