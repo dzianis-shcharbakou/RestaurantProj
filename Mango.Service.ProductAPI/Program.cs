@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 var dbConnectionString = string.Empty;
 
 builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), true);
-string appSettingConnectionString = builder.Configuration["CUSTOMCONNSTR_AppConfigConnectionString"];
+string appSettingConnectionString = builder.Configuration.GetConnectionString("AppConfigConnectionString");
 builder.Configuration.AddAzureAppConfiguration(options =>
 {
     options.Connect(appSettingConnectionString)
