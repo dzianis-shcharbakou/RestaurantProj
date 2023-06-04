@@ -14,18 +14,22 @@ var dbConnectionString = string.Empty;
 
 builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), true);
 string appSettingConnectionString = builder.Configuration.GetConnectionString("AppConfigConnectionString");
-builder.Configuration.AddAzureAppConfiguration(options =>
+if (!appSettingConnectionString.IsNullOrEmpty())
 {
-    options.Connect(appSettingConnectionString)
-					// Load configuration values with no label
-                    .Select(KeyFilter.Any, LabelFilter.Null)
-                    // Override with any configuration values specific to current hosting env
-                    .Select(KeyFilter.Any, builder.Environment.EnvironmentName)
-            .ConfigureKeyVault(kv =>
-            {
-                kv.SetCredential(new DefaultAzureCredential());
-            });
-});
+    builder.Configuration.AddAzureAppConfiguration(options =>
+    {
+        options.Connect(appSettingConnectionString)
+                        // Load configuration values with no label
+                        .Select(KeyFilter.Any, LabelFilter.Null)
+                        // Override with any configuration values specific to current hosting env
+                        .Select(KeyFilter.Any, builder.Environment.EnvironmentName)
+                .ConfigureKeyVault(kv =>
+                {
+                    kv.SetCredential(new DefaultAzureCredential());
+                });
+    });
+}
+
 var productBlobStorageName = builder.Configuration["ProductBlobStorageName"];
 
 if (builder.Environment.EnvironmentName == "Development")
