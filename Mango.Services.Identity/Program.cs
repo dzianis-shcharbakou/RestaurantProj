@@ -23,11 +23,14 @@ else
 }
 
 builder.Services.AddDbContext<ApplicationDbContext>(options => {
-	options.UseSqlServer(dbConnectionString);
+	options.UseSqlServer(dbConnectionString,
+        sqlServerOptions => sqlServerOptions.EnableRetryOnFailure());
 });
+
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 	.AddEntityFrameworkStores<ApplicationDbContext>()
 	.AddDefaultTokenProviders();
+
 builder.Services.AddIdentityServer(options =>
 {
 	options.Events.RaiseErrorEvents = true;
@@ -63,8 +66,12 @@ app.UseIdentityServer();
 app.UseAuthorization();
 
 app.MapRazorPages();
+
 using (var scope = app.Services.CreateScope())
 {
+	var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+	await db.Database.MigrateAsync();
+
 	var applicationDbSeedService = scope.ServiceProvider.GetRequiredService<IApplicationDbContextSeed>();
 	await applicationDbSeedService.SeedAsync();
 }

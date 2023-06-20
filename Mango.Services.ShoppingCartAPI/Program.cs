@@ -23,6 +23,10 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
     options.UseSqlServer(dbConnectionString);
 });
 
+builder.Services.BuildServiceProvider().GetService<ApplicationContext>().Database.Migrate();
+
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
 var mapper = MappingConfig.GetMapperConfiguration();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -88,6 +92,11 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    using (var scope = app.Services.CreateScope())
+    {
+        var salesContext = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+        salesContext.Database.EnsureCreated();
+    }
 }
 
 app.UseHttpsRedirection();

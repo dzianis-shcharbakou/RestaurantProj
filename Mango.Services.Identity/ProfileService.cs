@@ -60,6 +60,4 @@ namespace Mango.Services.Identity
             context.IsActive = user != null;
         }
     }
-
-
 }

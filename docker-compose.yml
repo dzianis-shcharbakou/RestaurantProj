@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+  mango.services.shoppingcartapi:
+    image: ${DOCKER_REGISTRY-}mangoservicesshoppingcartapi
+    build:
+      context: .
+      dockerfile: Mango.Services.ShoppingCartAPI/Dockerfile
+
+  shoppingcart-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+
+  mango.services.identity:
+    image: ${DOCKER_REGISTRY-}mangoservicesidentity
+    build:
+      context: .
+      dockerfile: Mango.Services.Identity/Dockerfile
+
+  identity-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+
+  mango.web:
+    image: ${DOCKER_REGISTRY-}mangoweb
+    build:
+      context: .
+      dockerfile: Mango.Web/Dockerfile
+

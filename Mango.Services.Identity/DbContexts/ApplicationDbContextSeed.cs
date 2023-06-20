@@ -29,7 +29,7 @@ namespace Mango.Services.Identity.DbContexts
 
 		public async Task SeedAsync()
 		{
-			if (_roleManager.FindByNameAsync(StaticDetails.Admin).Result == null)
+			if ((await _roleManager.FindByNameAsync(StaticDetails.Admin)) == null)
 			{
 				_applicationDbContext.Database.Migrate();
 
